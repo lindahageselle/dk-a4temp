@@ -10,6 +10,11 @@ public class TCPClient {
     private BufferedReader fromServer;
     private Socket connection;
 
+    //
+    // I added these because I thiiink we need?
+    private InputStream in;
+    private OutputStream out;
+
     // Hint: if you want to store a message for the last error, store it here
     private String lastError = null;
 
@@ -26,7 +31,18 @@ public class TCPClient {
         // TODO Step 1: implement this method
         // Hint: Remember to process all exceptions and return false on error
         // Hint: Remember to set up all the necessary input/output stream variables
-        return false;
+
+        boolean connected = false;
+        try {
+            connection = new Socket(host, port);
+            System.out.println("Connected!!!!");
+            in = connection.getInputStream();
+            out = connection.getOutputStream();
+            connected = true;
+        }catch (IOException e) {
+            System.out.println("Socket error: " + e.getMessage());
+        }
+        return connected;
     }
 
     /**
@@ -41,6 +57,15 @@ public class TCPClient {
     public synchronized void disconnect() {
         // TODO Step 4: implement this method
         // Hint: remember to check if connection is active
+
+        if (isConnectionActive()) {
+            try {
+                connection.close();
+                System.out.println("Disconnecting worked!");
+            } catch (IOException e) {
+                System.out.println("Disconnect error: " + e.getMessage());
+            }
+        }
     }
 
     /**
@@ -59,7 +84,14 @@ public class TCPClient {
     private boolean sendCommand(String cmd) {
         // TODO Step 2: Implement this method
         // Hint: Remember to check if connection is active
-        return false;
+        boolean commandSent = false;
+        try {
+            out.write(cmd.getBytes());
+            commandSent = true;
+        } catch (IOException e) {
+            System.out.println("Error: " + e.getMessage());
+        }
+        return commandSent;
     }
 
     /**
@@ -72,7 +104,14 @@ public class TCPClient {
         // TODO Step 2: implement this method
         // Hint: Reuse sendCommand() method
         // Hint: update lastError if you want to store the reason for the error.
-        return false;
+        boolean msgSent = false;
+        try {
+            sendCommand("msg " + message);
+            msgSent = true;
+        } catch (Exception e) {
+            System.out.println();
+        }
+        return msgSent;
     }
 
     /**
@@ -106,7 +145,15 @@ public class TCPClient {
         // TODO Step 6: Implement this method
         // Hint: Reuse sendCommand() method
         // Hint: update lastError if you want to store the reason for the error.
-        return false;
+
+        boolean msgSent = false;
+        try {
+            sendCommand("privmsg " + recipient + " " + message);
+            msgSent = true;
+        } catch (Exception e) {
+            System.out.println();
+        }
+        return msgSent;
     }
 
 
