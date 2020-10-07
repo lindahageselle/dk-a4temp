@@ -11,7 +11,7 @@ public class TCPClient {
     private Socket connection;
 
     //
-    // I added these because I thiiink we need?
+    // I added these because I think we need?
     private InputStream in;
     private OutputStream out;
 
