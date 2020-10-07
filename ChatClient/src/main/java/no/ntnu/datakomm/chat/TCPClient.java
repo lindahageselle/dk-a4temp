@@ -84,6 +84,7 @@ public class TCPClient {
     private boolean sendCommand(String cmd) {
         // TODO Step 2: Implement this method
         // Hint: Remember to check if connection is active
+
         boolean commandSent = false;
         try {
             out.write(cmd.getBytes());
@@ -104,9 +105,10 @@ public class TCPClient {
         // TODO Step 2: implement this method
         // Hint: Reuse sendCommand() method
         // Hint: update lastError if you want to store the reason for the error.
+
         boolean msgSent = false;
         try {
-            sendCommand("msg " + message);
+            sendCommand("msg " + message + "\n");
             msgSent = true;
         } catch (Exception e) {
             System.out.println();
@@ -122,6 +124,12 @@ public class TCPClient {
     public void tryLogin(String username) {
         // TODO Step 3: implement this method
         // Hint: Reuse sendCommand() method
+
+        try {
+            sendCommand("login " + username + "\n");
+        } catch (Exception e) {
+            System.out.println(e.getMessage());
+        }
     }
 
     /**
