@@ -58,6 +58,7 @@ public class TCPClient {
         // TODO Step 4: implement this method
         // Hint: remember to check if connection is active
 
+
         if (isConnectionActive()) {
             try {
                 connection.close();
@@ -231,16 +232,21 @@ public class TCPClient {
             // and act on it.
             // Hint: In Step 3 you need to handle only login-related responses.
             // Hint: In Step 3 reuse onLoginResult() method
+            String receivedResponse = this.waitServerResponse();
+            if (receivedResponse != null) {
+
+                    if (receivedResponse.contains("loginok")) {
+                        onLoginResult(false, "Login successful");
+                    } else if (receivedResponse.contains("loginerr")) {
+                        onLoginResult(false, "Login failed. Choose a unique username.");
+                    }
+
+
+            }
 
             // We can make this into a switch case later if we want.
             // Just did this because it was easy
-            String receivedResponse = this.waitServerResponse();
-            if (receivedResponse.contains("loginok")) {
-                onLoginResult(true, "Login works");
-            }
-            else if (receivedResponse.contains("loginerr")) {
-                onLoginResult(false, "Login failed. Choose a unique username.");
-            }
+
 
             // TODO Step 5: update this method, handle user-list response from the server
             // Hint: In Step 5 reuse onUserList() method
@@ -301,6 +307,7 @@ public class TCPClient {
     private void onDisconnect() {
         // TODO Step 4: Implement this method
         // Hint: all the onXXX() methods will be similar to onLoginResult()
+
     }
 
     /**
