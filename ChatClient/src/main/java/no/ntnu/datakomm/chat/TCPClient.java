@@ -58,10 +58,10 @@ public class TCPClient {
         // TODO Step 4: implement this method
         // Hint: remember to check if connection is active
 
-
         if (isConnectionActive()) {
             try {
                 connection.close();
+                onDisconnect();
                 System.out.println("Disconnecting worked!");
             } catch (IOException e) {
                 System.out.println("Disconnect error: " + e.getMessage());
@@ -141,6 +141,10 @@ public class TCPClient {
         // TODO Step 5: implement this method
         // Hint: Use Wireshark and the provided chat client reference app to find out what commands the
         // client and server exchange for user listing.
+
+
+//        Wireshark seems to only see command "users", so I would assume:
+//        sendCommand("users \n");
     }
 
     /**
@@ -232,20 +236,6 @@ public class TCPClient {
             // and act on it.
             // Hint: In Step 3 you need to handle only login-related responses.
             // Hint: In Step 3 reuse onLoginResult() method
-            String receivedResponse = this.waitServerResponse();
-            if (receivedResponse != null) {
-
-                    if (receivedResponse.contains("loginok")) {
-                        onLoginResult(false, "Login successful");
-                    } else if (receivedResponse.contains("loginerr")) {
-                        onLoginResult(false, "Login failed. Choose a unique username.");
-                    }
-
-
-            }
-
-            // We can make this into a switch case later if we want.
-            // Just did this because it was easy
 
 
             // TODO Step 5: update this method, handle user-list response from the server
@@ -258,6 +248,24 @@ public class TCPClient {
 
             // TODO Step 8: add support for incoming supported command list (type: supported)
 
+            // Step 3 + some of step 8
+            String receivedResponse = this.waitServerResponse();
+            if (receivedResponse != null) {
+
+                // We can make this into a switch case later if we want.
+                // Just did this because it was easy
+
+                if (receivedResponse.contains("loginok")) {
+                    onLoginResult(false, "Login successful");
+                }
+                else if (receivedResponse.contains("loginerr")) {
+                    onLoginResult(false, "Login failed. Choose a unique single-word username.");
+                }
+
+
+
+
+            }
         }
     }
 
@@ -308,6 +316,10 @@ public class TCPClient {
         // TODO Step 4: Implement this method
         // Hint: all the onXXX() methods will be similar to onLoginResult()
 
+
+        for (ChatListener l : listeners) {
+            l.onDisconnect();
+        }
     }
 
     /**
