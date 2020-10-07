@@ -186,9 +186,8 @@ public class TCPClient {
             BufferedReader in = new BufferedReader(new InputStreamReader(connection.getInputStream()));
             String fromServer = in.readLine();
             if (fromServer == null) {
-                throw new IOException();
+                connection.close();
             }
-            connection.close();
             return fromServer;
         } catch (IOException e) {
             System.out.println(e.getMessage());
@@ -232,6 +231,16 @@ public class TCPClient {
             // and act on it.
             // Hint: In Step 3 you need to handle only login-related responses.
             // Hint: In Step 3 reuse onLoginResult() method
+
+            // We can make this into a switch case later if we want.
+            // Just did this because it was easy
+            String receivedResponse = this.waitServerResponse();
+            if (receivedResponse.contains("loginok")) {
+                System.out.println("Login is ok!!");
+            }
+            else if (receivedResponse.contains("loginerr")) {
+                System.out.println("Login error received");
+            }
 
             // TODO Step 5: update this method, handle user-list response from the server
             // Hint: In Step 5 reuse onUserList() method
