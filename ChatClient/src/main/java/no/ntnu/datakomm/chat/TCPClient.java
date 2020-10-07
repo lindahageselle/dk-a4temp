@@ -236,10 +236,10 @@ public class TCPClient {
             // Just did this because it was easy
             String receivedResponse = this.waitServerResponse();
             if (receivedResponse.contains("loginok")) {
-                System.out.println("Login is ok!!");
+                onLoginResult(true, "Login works");
             }
             else if (receivedResponse.contains("loginerr")) {
-                System.out.println("Login error received");
+                onLoginResult(false, "Login failed. Choose a unique username.");
             }
 
             // TODO Step 5: update this method, handle user-list response from the server
