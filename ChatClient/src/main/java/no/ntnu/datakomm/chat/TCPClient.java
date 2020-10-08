@@ -256,6 +256,25 @@ public class TCPClient {
 
 
 
+
+
+
+
+
+                else if (receivedResponse.contains("msgok")) {
+                    //Do nothing, it's fine
+                }
+                else if (receivedResponse.contains("msgerr")) {
+                    onMsgError("Something went wrong with the last private message sent from this client");
+                }
+                else if (receivedResponse.contains("supported")) {
+
+//                    TODO how to i get the actual response thoooo ughhhh
+//                    This doesn't work
+//                    onSupported(new String[] {receivedResponse});
+                }
+
+
             }
         }
     }
@@ -331,6 +350,10 @@ public class TCPClient {
      */
     private void onMsgReceived(boolean priv, String sender, String text) {
         // TODO Step 7: Implement this method
+
+        for (ChatListener l : listeners) {
+            l.onMessageReceived(new TextMessage(sender, priv, text));
+        }
     }
 
     /**
@@ -340,6 +363,10 @@ public class TCPClient {
      */
     private void onMsgError(String errMsg) {
         // TODO Step 7: Implement this method
+
+        for (ChatListener l : listeners) {
+            l.onMessageError(errMsg);
+        }
     }
 
     /**
@@ -349,6 +376,10 @@ public class TCPClient {
      */
     private void onCmdError(String errMsg) {
         // TODO Step 7: Implement this method
+
+        for (ChatListener l : listeners) {
+            l.onCommandError(errMsg);
+        }
     }
 
     /**
@@ -359,5 +390,11 @@ public class TCPClient {
      */
     private void onSupported(String[] commands) {
         // TODO Step 8: Implement this method
+
+
+        for (ChatListener l : listeners) {
+            l.onSupportedCommands(commands);
+        }
+
     }
 }
