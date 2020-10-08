@@ -82,12 +82,14 @@ public class TCPClient {
         // Hint: Remember to check if connection is active
 
         boolean commandSent = false;
-        try {
-            output.write(cmd.getBytes());
-            commandSent = true;
-        } catch (IOException e) {
-            lastError = e.getMessage();
-            System.out.println("Send command error: " + lastError);
+        if (isConnectionActive()) {
+            try {
+                output.write(cmd.getBytes());
+                commandSent = true;
+            } catch (IOException e) {
+                lastError = e.getMessage();
+                System.out.println("Send command error: " + lastError);
+            }
         }
         return commandSent;
     }
