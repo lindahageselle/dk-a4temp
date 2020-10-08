@@ -242,7 +242,7 @@ public class TCPClient {
                 // Just did this because it was easy
 
                 if (receivedResponse.contains("loginok")) {
-                    onLoginResult(false, "Login successful");
+                    onLoginResult(true, "Login successful");
                 }
                 else if (receivedResponse.contains("loginerr")) {
                     onLoginResult(false, "Login failed. Choose a unique single-word username.");
