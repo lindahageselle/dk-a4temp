@@ -15,9 +15,6 @@ public class TCPClient {
     private InputStream in;
     private OutputStream out;
 
-    // Hint: if you want to store a message for the last error, store it here
-    private String lastError = null;
-
     private final List<ChatListener> listeners = new LinkedList<>();
 
     /**
@@ -206,11 +203,7 @@ public class TCPClient {
      * @return Error message or "" if there has been no error
      */
     public String getLastError() {
-        if (lastError != null) {
-            return lastError;
-        } else {
-            return "";
-        }
+        return "Last error message here";
     }
 
     /**
