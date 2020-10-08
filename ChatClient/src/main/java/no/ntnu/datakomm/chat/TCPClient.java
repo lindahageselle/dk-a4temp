@@ -279,7 +279,7 @@ public class TCPClient {
                     case "privmsg":
                         assert serverArgument != null;
                         String[] serverArgsBits = serverArgument.split(" ", 2);
-                        onMsgReceived(true, serverArgsBits[1], serverArgsBits[2]);
+                        onMsgReceived(true, serverArgsBits[0], serverArgsBits[1]);
                         break;
                     case "supported":
                         this.onSupported(serverArgument.split(" "));
