@@ -132,7 +132,13 @@ public class TCPClient {
         // TODO Step 5: implement this method
         // Hint: Use Wireshark and the provided chat client reference app to find out what commands the
         // client and server exchange for user listing.
-
+        //Birger: some of my stuff, no touching
+           // try{
+           //     sendCommand("users" + "\n" );
+           // }
+           // catch (Exception e){
+          //      System.out.println(e.getMessage());
+           // }
 
 //        Wireshark seems to only see command "users", so I would assume:
 //        sendCommand("users \n");
