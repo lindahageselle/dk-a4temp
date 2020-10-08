@@ -238,6 +238,9 @@ public class TCPClient {
 
                     case  "msgok":
                     case "msgerr":
+                        onMsgError(serverArgument);
+                        break;
+
                     case "":
                         break;
 
