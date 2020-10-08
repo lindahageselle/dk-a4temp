@@ -9,6 +9,7 @@ public class TCPClient {
     private Socket connection;
     private InputStream input;
     private OutputStream output;
+    private String lastError = "";
     private final List<ChatListener> listeners = new LinkedList<>();
 
     /**
@@ -26,12 +27,13 @@ public class TCPClient {
         boolean connected = false;
         try {
             connection = new Socket(host, port);
-            System.out.println("Connected!!!!");
+            System.out.println("Connected!");
             input = connection.getInputStream();
             output = connection.getOutputStream();
             connected = true;
         }catch (IOException e) {
-            System.out.println("Socket error: " + e.getMessage());
+            lastError = e.getMessage();
+            System.out.println("Socket error: " + lastError);
         }
         return connected;
     }
@@ -53,9 +55,10 @@ public class TCPClient {
             try {
                 connection.close();
                 onDisconnect();
-                System.out.println("Disconnecting worked!");
+                System.out.println("Disconnect successful.");
             } catch (IOException e) {
-                System.out.println("Disconnect error: " + e.getMessage());
+                lastError = e.getMessage();
+                System.out.println("Disconnect error: " + lastError);
             }
         }
     }
@@ -82,7 +85,8 @@ public class TCPClient {
             output.write(cmd.getBytes());
             commandSent = true;
         } catch (IOException e) {
-            System.out.println("Error: " + e.getMessage());
+            lastError = e.getMessage();
+            System.out.println("Send command error: " + lastError);
         }
         return commandSent;
     }
@@ -102,7 +106,8 @@ public class TCPClient {
         try {
             msgSent = sendCommand("msg " + message + "\n");
         } catch (Exception e) {
-            System.out.println();
+            lastError = e.getMessage();
+            System.out.println("Send public message error: " + lastError);
         }
         return msgSent;
     }
@@ -153,7 +158,8 @@ public class TCPClient {
         try {
             msgSent = sendCommand("privmsg " + recipient + " " + message + "\n");
         } catch (Exception e) {
-            System.out.println();
+            lastError = e.getMessage();
+            System.out.println("Send private message error: " + lastError);
         }
         return msgSent;
     }
@@ -185,7 +191,8 @@ public class TCPClient {
             }
             return messageFromServer;
         } catch (IOException e) {
-            System.out.println(e.getMessage());
+            lastError = e.getMessage();
+            System.out.println("Wait for server response error: " + lastError);
         }
         return null;
     }
@@ -196,7 +203,7 @@ public class TCPClient {
      * @return Error message or "" if there has been no error
      */
     public String getLastError() {
-        return "Last error message here";
+        return lastError;
     }
 
     /**
