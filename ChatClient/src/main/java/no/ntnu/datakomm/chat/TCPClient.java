@@ -4,6 +4,7 @@ import java.io.*;
 import java.net.*;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Objects;
 
 public class TCPClient {
     private PrintWriter toServer;
@@ -140,6 +141,7 @@ public class TCPClient {
         // Hint: Use Wireshark and the provided chat client reference app to find out what commands the
         // client and server exchange for user listing.
         //Birger: some of my stuff, no touching
+
            try{
                sendCommand("users\n" );
                startListenThread();
@@ -189,6 +191,7 @@ public class TCPClient {
      * @return one line of text (one command) received from the server
      */
     private String waitServerResponse() {
+
         // Step 9: implement this method
         // If you get I/O Exception or null from the stream, it means that something has gone wrong
         // with the stream and hence the socket. Probably a good idea to close the socket in that case.
@@ -199,6 +202,7 @@ public class TCPClient {
             if (messageFromServer == null) {
                 connection.close();
                 connection = null;
+                messageFromServer = "";
             }
             return messageFromServer;
         } catch (IOException e) {
@@ -207,7 +211,7 @@ public class TCPClient {
                 System.out.println("Wait for server response error: " + lastError);
             }
         }
-        return null;
+        return "";
     }
 
     /**
@@ -245,7 +249,8 @@ public class TCPClient {
             // TODO Step 5: update this method, handle user-list response from the server
             //Birger : messing around here too
 
-            //Birger: Attemt at switch case...... TODO: fILL OUT DESCRIPTION
+            //Birger: Attempt at switch case...... TODO: fILL OUT DESCRIPTION
+
             String[] arg = waitServerResponse().split(" ", 2);
             String serverCommand = arg[0];
             String serverArgument = null;
@@ -270,20 +275,23 @@ public class TCPClient {
 
                     case  "msgok":
                     case "msgerr":
+                    case "":
                         break;
 
                     case "msg":
-                        onMsgReceived(false, "some dude",serverArgument);
+                        String[] serverArgsBits = serverArgument.split(" ", 2);
+                        onMsgReceived(false, serverArgsBits[0],serverArgsBits[1]);
                         break;
 
                     case "privmsg":
                         assert serverArgument != null;
-                        String[] serverArgsBits = serverArgument.split(" ", 2);
-                        onMsgReceived(true, serverArgsBits[0], serverArgsBits[1]);
+                        String[] serverArgsBitsPriv = serverArgument.split(" ", 2);
+                        onMsgReceived(true, serverArgsBitsPriv[0], serverArgsBitsPriv[1]);
                         break;
                     case "supported":
                         this.onSupported(serverArgument.split(" "));
                         break;
+
                     default:
                         System.out.println(serverArgument +": "+ serverArgument);
 
