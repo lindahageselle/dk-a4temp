@@ -100,8 +100,7 @@ public class TCPClient {
 
         boolean msgSent = false;
         try {
-            sendCommand("msg " + message + "\n");
-            msgSent = true;
+            msgSent = sendCommand("msg " + message + "\n");
         } catch (Exception e) {
             System.out.println();
         }
@@ -152,8 +151,7 @@ public class TCPClient {
 
         boolean msgSent = false;
         try {
-            sendCommand("privmsg " + recipient + " " + message + "\n");
-            msgSent = true;
+            msgSent = sendCommand("privmsg " + recipient + " " + message + "\n");
         } catch (Exception e) {
             System.out.println();
         }
