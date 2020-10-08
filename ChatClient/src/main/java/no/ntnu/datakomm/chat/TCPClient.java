@@ -54,6 +54,7 @@ public class TCPClient {
         if (isConnectionActive()) {
             try {
                 connection.close();
+                connection = null;
                 onDisconnect();
                 System.out.println("Disconnect successful.");
             } catch (IOException e) {
@@ -164,7 +165,6 @@ public class TCPClient {
         return msgSent;
     }
 
-
     /**
      * Send a request for the list of commands that server supports.
      */
@@ -173,7 +173,6 @@ public class TCPClient {
         // Hint: Reuse sendCommand() method
         sendCommand("help \n");
     }
-
 
     /**
      * Wait for chat server's response
@@ -189,11 +188,14 @@ public class TCPClient {
             String messageFromServer = reader.readLine();
             if (messageFromServer == null) {
                 connection.close();
+                connection = null;
             }
             return messageFromServer;
         } catch (IOException e) {
-            lastError = e.getMessage();
-            System.out.println("Wait for server response error: " + lastError);
+            if (isConnectionActive()) {
+                lastError = e.getMessage();
+                System.out.println("Wait for server response error: " + lastError);
+            }
         }
         return null;
     }
@@ -299,7 +301,6 @@ public class TCPClient {
     public void removeListener(ChatListener listener) {
         listeners.remove(listener);
     }
-
 
     ///////////////////////////////////////////////////////////////////////////////////////////////////////////
     // The following methods are all event notifiers - notify all the listeners about a specific event.
