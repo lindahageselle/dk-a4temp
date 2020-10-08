@@ -6,15 +6,9 @@ import java.util.LinkedList;
 import java.util.List;
 
 public class TCPClient {
-    private PrintWriter toServer;
-    private BufferedReader fromServer;
     private Socket connection;
-
-    //
-    // I added these because I think we need?
-    private InputStream in;
-    private OutputStream out;
-
+    private InputStream input;
+    private OutputStream output;
     private final List<ChatListener> listeners = new LinkedList<>();
 
     /**
@@ -33,8 +27,8 @@ public class TCPClient {
         try {
             connection = new Socket(host, port);
             System.out.println("Connected!!!!");
-            in = connection.getInputStream();
-            out = connection.getOutputStream();
+            input = connection.getInputStream();
+            output = connection.getOutputStream();
             connected = true;
         }catch (IOException e) {
             System.out.println("Socket error: " + e.getMessage());
@@ -85,7 +79,7 @@ public class TCPClient {
 
         boolean commandSent = false;
         try {
-            out.write(cmd.getBytes());
+            output.write(cmd.getBytes());
             commandSent = true;
         } catch (IOException e) {
             System.out.println("Error: " + e.getMessage());
@@ -186,12 +180,12 @@ public class TCPClient {
         // If you get I/O Exception or null from the stream, it means that something has gone wrong
         // with the stream and hence the socket. Probably a good idea to close the socket in that case.
         try {
-            BufferedReader in = new BufferedReader(new InputStreamReader(connection.getInputStream()));
-            String fromServer = in.readLine();
-            if (fromServer == null) {
+            BufferedReader reader = new BufferedReader(new InputStreamReader(input));
+            String messageFromServer = reader.readLine();
+            if (messageFromServer == null) {
                 connection.close();
             }
-            return fromServer;
+            return messageFromServer;
         } catch (IOException e) {
             System.out.println(e.getMessage());
         }
