@@ -6,6 +6,8 @@ import java.util.LinkedList;
 import java.util.List;
 
 public class TCPClient {
+    private PrintWriter toServer;
+    private BufferedReader fromServer;
     private Socket connection;
     private InputStream input;
     private OutputStream output;
@@ -140,7 +142,7 @@ public class TCPClient {
         //Birger: some of my stuff, no touching
            try{
                sendCommand("users\n" );
-               parseIncomingCommands();
+               startListenThread();
            }
             catch (Exception e){
                System.out.println(e.getMessage());
@@ -190,9 +192,10 @@ public class TCPClient {
         // Step 9: implement this method
         // If you get I/O Exception or null from the stream, it means that something has gone wrong
         // with the stream and hence the socket. Probably a good idea to close the socket in that case.
+        String messageFromServer = null;
         try {
-            BufferedReader reader = new BufferedReader(new InputStreamReader(input));
-            String messageFromServer = reader.readLine();
+            fromServer = new BufferedReader(new InputStreamReader(input));
+            messageFromServer = fromServer.readLine();
             if (messageFromServer == null) {
                 connection.close();
                 connection = null;
@@ -247,7 +250,7 @@ public class TCPClient {
             String serverCommand = arg[0];
             String serverArgument = null;
 
-            if (arg.length > 2)
+            if (arg.length > 1)
                 serverArgument = arg[1].toString();
 
             if (serverCommand != null)
@@ -260,8 +263,9 @@ public class TCPClient {
                         onLoginResult(false,serverArgument);
                         break;
                     case "users":
+                        if (serverArgument != null){
                         String[] users = serverArgument.split(" ");
-                        this.onUsersList(users);
+                        this.onUsersList(users);}
                         break;
 
                     case  "msgok":
@@ -269,7 +273,7 @@ public class TCPClient {
                         break;
 
                     case "msg":
-                        onMsgReceived(false, "Some Dude", serverArgument);
+                        onMsgReceived(false, "some dude",serverArgument);
                         break;
 
                     case "privmsg":
