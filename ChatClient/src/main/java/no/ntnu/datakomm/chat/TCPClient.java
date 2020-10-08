@@ -7,7 +7,7 @@ import java.util.List;
 
 public class TCPClient {
     private Socket connection;
-    private InputStream input;
+    private BufferedReader input;
     private OutputStream output;
     private String lastError = "";
     private final List<ChatListener> listeners = new LinkedList<>();
@@ -28,7 +28,7 @@ public class TCPClient {
         try {
             connection = new Socket(host, port);
             System.out.println("Connected!");
-            input = connection.getInputStream();
+            input = new BufferedReader(new InputStreamReader(connection.getInputStream()));
             output = connection.getOutputStream();
             connected = true;
         }catch (IOException e) {
@@ -186,8 +186,7 @@ public class TCPClient {
         // If you get I/O Exception or null from the stream, it means that something has gone wrong
         // with the stream and hence the socket. Probably a good idea to close the socket in that case.
         try {
-            BufferedReader reader = new BufferedReader(new InputStreamReader(input));
-            String messageFromServer = reader.readLine();
+            String messageFromServer = input.readLine();
             if (messageFromServer == null) {
                 connection.close();
                 connection = null;
