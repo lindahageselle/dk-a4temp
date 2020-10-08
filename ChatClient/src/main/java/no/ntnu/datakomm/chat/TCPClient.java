@@ -219,7 +219,7 @@ public class TCPClient {
             String serverArgument = null;
 
             if (arg.length > 1)
-                serverArgument = arg[1].toString();
+                serverArgument = arg[1];
 
             if (serverCommand != null)
                 switch (serverCommand){
