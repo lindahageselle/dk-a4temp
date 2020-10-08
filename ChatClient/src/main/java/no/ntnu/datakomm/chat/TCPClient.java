@@ -6,8 +6,10 @@ import java.util.LinkedList;
 import java.util.List;
 
 public class TCPClient {
+    private PrintWriter toServer;
+    private BufferedReader fromServer;
     private Socket connection;
-    private BufferedReader input;
+    private InputStream input;
     private OutputStream output;
     private String lastError = "";
     private final List<ChatListener> listeners = new LinkedList<>();
@@ -28,7 +30,7 @@ public class TCPClient {
         try {
             connection = new Socket(host, port);
             System.out.println("Connected!");
-            input = new BufferedReader(new InputStreamReader(connection.getInputStream()));
+            input = connection.getInputStream();
             output = connection.getOutputStream();
             connected = true;
         }catch (IOException e) {
@@ -82,14 +84,12 @@ public class TCPClient {
         // Hint: Remember to check if connection is active
 
         boolean commandSent = false;
-        if (isConnectionActive()) {
-            try {
-                output.write(cmd.getBytes());
-                commandSent = true;
-            } catch (IOException e) {
-                lastError = e.getMessage();
-                System.out.println("Send command error: " + lastError);
-            }
+        try {
+            output.write(cmd.getBytes());
+            commandSent = true;
+        } catch (IOException e) {
+            lastError = e.getMessage();
+            System.out.println("Send command error: " + lastError);
         }
         return commandSent;
     }
@@ -139,7 +139,14 @@ public class TCPClient {
         // TODO Step 5: implement this method
         // Hint: Use Wireshark and the provided chat client reference app to find out what commands the
         // client and server exchange for user listing.
-
+        //Birger: some of my stuff, no touching
+           try{
+               sendCommand("users\n" );
+               startListenThread();
+           }
+            catch (Exception e){
+               System.out.println(e.getMessage());
+            }
 
 //        Wireshark seems to only see command "users", so I would assume:
 //        sendCommand("users \n");
@@ -185,8 +192,10 @@ public class TCPClient {
         // Step 9: implement this method
         // If you get I/O Exception or null from the stream, it means that something has gone wrong
         // with the stream and hence the socket. Probably a good idea to close the socket in that case.
+        String messageFromServer = null;
         try {
-            String messageFromServer = input.readLine();
+            fromServer = new BufferedReader(new InputStreamReader(input));
+            messageFromServer = fromServer.readLine();
             if (messageFromServer == null) {
                 connection.close();
                 connection = null;
@@ -234,6 +243,53 @@ public class TCPClient {
 
 
             // TODO Step 5: update this method, handle user-list response from the server
+            //Birger : messing around here too
+
+            //Birger: Attemt at switch case...... TODO: fILL OUT DESCRIPTION
+            String[] arg = waitServerResponse().split(" ", 2);
+            String serverCommand = arg[0];
+            String serverArgument = null;
+
+            if (arg.length > 1)
+                serverArgument = arg[1].toString();
+
+            if (serverCommand != null)
+                switch (serverCommand){
+                    case "loginok":
+                        onLoginResult(true, serverArgument);
+                        break;
+
+                    case  "loginerr":
+                        onLoginResult(false,serverArgument);
+                        break;
+                    case "users":
+                        if (serverArgument != null){
+                        String[] users = serverArgument.split(" ");
+                        this.onUsersList(users);}
+                        break;
+
+                    case  "msgok":
+                    case "msgerr":
+                        break;
+
+                    case "msg":
+                        onMsgReceived(false, "some dude",serverArgument);
+                        break;
+
+                    case "privmsg":
+                        assert serverArgument != null;
+                        String[] serverArgsBits = serverArgument.split(" ", 2);
+                        onMsgReceived(true, serverArgsBits[0], serverArgsBits[1]);
+                        break;
+                    case "supported":
+                        this.onSupported(serverArgument.split(" "));
+                        break;
+                    default:
+                        System.out.println(serverArgument +": "+ serverArgument);
+
+                }
+            }
+
             // Hint: In Step 5 reuse onUserList() method
 
             // TODO Step 7: add support for incoming chat messages from other users (types: msg, privmsg)
@@ -244,44 +300,38 @@ public class TCPClient {
             // TODO Step 8: add support for incoming supported command list (type: supported)
 
             // Step 3 + some of step 8
-            String receivedResponse = this.waitServerResponse();
-            if (receivedResponse != null) {
+            //String receivedResponse = this.waitServerResponse();
+            //if (receivedResponse != null) {
 
                 // We can make this into a switch case later if we want.
                 // Just did this because it was easy
 
-                if (receivedResponse.contains("loginok")) {
-                    onLoginResult(true, "Login successful");
-                }
-                else if (receivedResponse.contains("loginerr")) {
-                    onLoginResult(false, "Login failed. Choose a unique single-word username.");
-                }
+                //if (receivedResponse.contains("loginok")) {
+                  //  onLoginResult(true, "Login successful");
+                //}
+               // else if (receivedResponse.contains("loginerr")) {
+                //    onLoginResult(false, "Login failed. Choose a unique single-word username.");
+               // }
 
 
-
-
-
-
-
-
-
-                else if (receivedResponse.contains("msgok")) {
+               // else if (receivedResponse.contains("msgok")) {
                     //Do nothing, it's fine
                 }
-                else if (receivedResponse.contains("msgerr")) {
-                    onMsgError("Something went wrong with the last private message sent from this client");
-                }
-                else if (receivedResponse.contains("supported")) {
+               // else if (receivedResponse.contains("msgerr")) {
+                //    onMsgError("Something went wrong with the last private message sent from this client");
+               // }
+               // else if (receivedResponse.contains("supported")) {
 
 //                    TODO how to i get the actual response thoooo ughhhh
 //                    This doesn't work
 //                    onSupported(new String[] {receivedResponse});
-                }
 
 
-            }
-        }
-    }
+
+
+          //  }
+       // }
+
 
     /**
      * Register a new listener for events (login result, incoming message, etc)
