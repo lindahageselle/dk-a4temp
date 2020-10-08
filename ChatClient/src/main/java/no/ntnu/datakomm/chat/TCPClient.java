@@ -285,7 +285,7 @@ public class TCPClient {
 
 
     ///////////////////////////////////////////////////////////////////////////////////////////////////////////
-    // The following methods are all event-notificators - notify all the listeners about a specific event.
+    // The following methods are all event notifiers - notify all the listeners about a specific event.
     // By "event" here we mean "information received from the chat server".
     ///////////////////////////////////////////////////////////////////////////////////////////////////////////
 
