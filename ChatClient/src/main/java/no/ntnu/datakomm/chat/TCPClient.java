@@ -206,9 +206,7 @@ public class TCPClient {
      */
     public void startListenThread() {
         // Call parseIncomingCommands() in the new thread.
-        Thread t = new Thread(() -> {
-            parseIncomingCommands();
-        });
+        Thread t = new Thread(this::parseIncomingCommands);
         t.start();
     }
 
@@ -260,7 +258,7 @@ public class TCPClient {
     /**
      * Register a new listener for events (login result, incoming message, etc)
      *
-     * @param listener
+     * @param listener user listening to chat server
      */
     public void addListener(ChatListener listener) {
         if (!listeners.contains(listener)) {
@@ -271,7 +269,7 @@ public class TCPClient {
     /**
      * Unregister an event listener
      *
-     * @param listener
+     * @param listener user listening to chat server
      */
     public void removeListener(ChatListener listener) {
         listeners.remove(listener);
